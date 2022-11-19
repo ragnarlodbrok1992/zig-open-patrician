@@ -1,5 +1,6 @@
 const std = @import("std");
 const glfw = @import("libs/mach-glfw/build.zig");
+//const gl = @import("src/openglbindings/gl3v3.zig");
 
 pub fn build(b: *std.build.Builder) !void {
     const target = b.standardTargetOptions(.{});

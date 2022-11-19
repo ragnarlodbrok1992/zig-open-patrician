@@ -2,6 +2,7 @@ const std = @import("std");
 const warn = std.debug.warn;
 const panic = std.debug.panic;
 const glfw = @import("glfw");
+const gl = @import("openglbindings/gl3v3.zig");
 
 const WIDTH: i32 = 800;
 const HEIGHT: i32 = 600;
@@ -87,12 +88,19 @@ fn mouseCursorPositionCallback(window: glfw.Window, xpos: f64, ypos: f64) void {
     _ = ypos;
 }
 
+// zig-opengl
+fn glGetProcAddress(p: glfw.GLProc, proc: [:0]const u8) ?gl.FunctionPointer {
+    _ = p;
+    return glfw.getProcAddress(proc);
+}
+
 pub fn main() !u8 {
     // Print out version - for development right now
     const version: i32 = 0;
     const stdout = std.io.getStdOut().writer();
+    const proc: glfw.GLProc = undefined;
 
-    try stdout.print("Open Patrician - pre-alpha version {d}.", .{version});
+    try stdout.print("Open Patrician - pre-alpha version {d}.\n", .{version});
 
     // Glfw init
     try glfw.init(.{});
@@ -102,6 +110,12 @@ pub fn main() !u8 {
     const window = try glfw.Window.create(WIDTH, HEIGHT, "Open Patrician - pre-alpha version.", null, null, .{});
     defer window.destroy();
 
+    // Make window current context
+    try glfw.makeContextCurrent(window);
+
+    // Loading GLProc
+    try gl.load(proc, glGetProcAddress);
+
     // Set key callback
     window.setKeyCallback(keyCallback);
     window.setMouseButtonCallback(mouseClickCallback);
@@ -110,6 +124,12 @@ pub fn main() !u8 {
     // Waiting for closing the window
     while (!window.shouldClose()) {
         try glfw.pollEvents();
+
+        // Screen cleaning
+        gl.clearColor(1, 0, 1, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        try window.swapBuffers();
     }
 
     return 0;
