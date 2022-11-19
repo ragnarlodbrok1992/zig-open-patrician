@@ -1,8 +1,9 @@
 const std = @import("std");
-const warn = std.debug.warn;
-const panic = std.debug.panic;
 const glfw = @import("glfw");
 const gl = @import("openglbindings/gl3v3.zig");
+
+const warn = std.debug.warn;
+const panic = std.debug.panic;
 
 const WIDTH: i32 = 800;
 const HEIGHT: i32 = 600;
