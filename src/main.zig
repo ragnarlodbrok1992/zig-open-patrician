@@ -6,14 +6,16 @@ const gl = @import("openglbindings/gl3v3.zig");
 
 const WIDTH: i32 = 800;
 const HEIGHT: i32 = 600;
+
+// Engine control variables
 // var RUN_ENGINE: bool = true;
 
 // Math constructs for engine graphics
 const Vec2 = struct {
-    x: f64,
-    y: f64,
+    x: f32,
+    y: f32,
 
-    pub fn init(x: f64, y: f64) Vec2 {
+    pub fn init(x: f32, y: f32) Vec2 {
         return Vec2{
             .x = x,
             .y = y,
@@ -22,11 +24,11 @@ const Vec2 = struct {
 };
 
 const Vec3 = struct {
-    x: f64,
-    y: f64,
-    z: f64,
+    x: f32,
+    y: f32,
+    z: f32,
 
-    pub fn init(x: f64, y: f64, z: f64) Vec3 {
+    pub fn init(x: f32, y: f32, z: f32) Vec3 {
         return Vec2{
             .x = x,
             .y = y,
@@ -58,6 +60,22 @@ const frag_shader: []const u8 =
     \\}
 ;
 
+// Define data for triangle
+const Vertex = struct {
+    x: f32,
+    y: f32,
+    r: f32,
+    g: f32,
+    b: f32,
+};
+
+// Triangle vertices
+const vertices = [3]Vertex{
+    Vertex{ .x = -0.6, .y = -0.4, .r = 1.0, .g = 0.0, .b = 0.0 },
+    Vertex{ .x = 0.6, .y = -0.4, .r = 0.0, .g = 1.0, .b = 0.0 },
+    Vertex{ .x = 0.0, .y = 0.6, .r = 0.0, .g = 0.0, .b = 1.0 },
+};
+
 // Debug switch
 const DEBUG = true;
 
@@ -69,8 +87,8 @@ fn keyCallback(window: glfw.Window, key: glfw.Key, scancode: i32, action: glfw.A
     _ = action;
     _ = mods;
 
+    // Exit engine
     if (key == glfw.Key.escape) {
-        //RUN_ENGINE = false;
         window.setShouldClose(true);
     }
 }
@@ -107,7 +125,12 @@ pub fn main() !u8 {
     defer glfw.terminate();
 
     // Mach opengl
-    const window = try glfw.Window.create(WIDTH, HEIGHT, "Open Patrician - pre-alpha version.", null, null, .{});
+    // You set up window hints inside this structure
+    const window = try glfw.Window.create(WIDTH, HEIGHT, "Open Patrician - pre-alpha version.", null, null, .{
+        .resizable = false,
+        .context_version_major = 3,
+        .context_version_minor = 3,
+    });
     defer window.destroy();
 
     // Make window current context
